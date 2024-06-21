@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset=utf-8 />
-		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-        <title>Test</title>
-        <style>
-            body { margin: 0; overflow: hidden; }
-            canvas { display: block; }
-		#loading {
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>Test</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
+        #loading {
             position: absolute;
             top: 0;
             left: 0;
@@ -24,293 +24,685 @@
         #container {
             display: none;
         }
-          </style>
-	</head>
-	<body>
-		<div id="loading">Loading...</div>
-		<div id="container"></div>
+        #hearts {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 20;
+        }
+        .heart {
+            width: 30px;
+            height: 30px;
+            margin-right: 5px;
+        }
+        #timer {
+            position: absolute;
+            top: 50px;
+            left: 10px;
+            z-index: 20;
+            font-size: 2em;
+            color: white;
+        }
+        #notification {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            display: none; /* Initially hidden */
+        }
+        #notification img {
+            width: 400px;
+            height: 200px;
+        }
+        #notification p {
+            font-size: 2em;
+            margin: 20px 0;
+        }
+        #notification button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #ff4444;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+        #notification button:hover {
+            background-color: #ff0000;
+        }
+        #winNotification {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            display: none; /* Initially hidden */
+        }
+        #winNotification p {
+            font-size: 2em;
+            margin: 20px 0;
+        }
+        #winNotification button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #44ff44;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+        #winNotification button:hover {
+            background-color: #00ff00;
+        }
+        #mathQuestion {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 30;
+            display: none;
+        }
+        #mathQuestion p {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+        #mathQuestion button {
+            margin: 5px;
+            padding: 10px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">Wake up...</div>
+    <div id="container"></div>
+    <div id="hearts"></div>
+    <div id="timer">00:00</div>
+    <div id="notification">
+        <img src="rip.jpg" alt="You Died">
+        <p>You Died!</p>
+        <button id="respawnButton">Respawn</button>
+        <button id="exitButton">Exit</button>
+    </div>
+    <div id="winNotification">
+        <p>You Win!</p>
+        <p id="scoreText"></p>
+        <button id="mainMenuButton">Main Menu</button>
+        <button id="leaderboardButton">Leaderboard</button>
+    </div>
+    <div id="mathQuestion">
+        <p id="questionText"></p>
+        <button id="option1"></button>
+        <button id="option2"></button>
+        <button id="option3"></button>
+    </div>
 
-        <script type="importmap">
-            {
-              "imports": {
-                "three": "https://unpkg.com/three@0.150.1/build/three.module.js",
-                "three/addons/": "https://unpkg.com/three@0.150.1/examples/jsm/",
-				"three-pathfinding": "./libs/three-pathfinding.umd.js"
-              }
+    <script type="importmap">
+        {
+          "imports": {
+            "three": "https://unpkg.com/three@0.150.1/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.150.1/examples/jsm/"
+          }
+        }
+    </script>
+    <script type="module">
+        import * as THREE from 'three';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+        import { Octree } from 'three/addons/math/Octree.js';
+        import { Capsule } from 'three/addons/math/Capsule.js';
+        import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js';
+
+        let model, animations, playerHealth = 3, playerScore = 0, wallsOpened = 0;
+        let controlsEnabled = true, gameStartTime, timerInterval;
+        let currentMathQuestion;
+        let audioInitialized = false;
+
+        const clock = new THREE.Clock();
+        const scene = new THREE.Scene();
+        const mixers = [], objects = [], monsters = [];
+
+        scene.background = new THREE.Color(0x151515);
+        scene.fog = new THREE.Fog(0x0C0C0C, 0, 50);
+
+        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.rotation.order = 'YXZ';
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.02);
+        scene.add(ambientLight);
+
+        const senter = new THREE.SpotLight(0xffffff);
+        senter.intensity = 0.45;
+        senter.angle = Math.PI / 7;
+        senter.penumbra = 0.3;
+        senter.distance = 5;
+        senter.decay = 1;
+        senter.castShadow = true;
+        scene.add(senter);
+        let SenterNyala = false;
+
+        const container = document.getElementById('container');
+        const loadingScreen = document.getElementById('loading');
+        const heartsContainer = document.getElementById('hearts');
+        const timerElement = document.getElementById('timer');
+        const notification = document.getElementById('notification');
+        const respawnButton = document.getElementById('respawnButton');
+        const exitButton = document.getElementById('exitButton');
+        const winNotification = document.getElementById('winNotification');
+        const scoreText = document.getElementById('scoreText');
+        const mainMenuButton = document.getElementById('mainMenuButton');
+        const leaderboardButton = document.getElementById('leaderboardButton');
+        const mathQuestion = document.getElementById('mathQuestion');
+        const questionText = document.getElementById('questionText');
+        const option1 = document.getElementById('option1');
+        const option2 = document.getElementById('option2');
+        const option3 = document.getElementById('option3');
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setAnimationLoop(animate);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.toneMapping = THREE.NoToneMapping;
+        container.appendChild(renderer.domElement);
+
+        const GRAVITY = 30;
+        const STEPS_PER_FRAME = 5;
+
+        const worldOctree = new Octree();
+
+        const playerCollider = new Capsule(new THREE.Vector3(0, 0.35, 0), new THREE.Vector3(0, 1, 0), 0.35);
+        const playerVelocity = new THREE.Vector3();
+        const playerDirection = new THREE.Vector3();
+
+        let playerOnFloor = false;
+
+        const keyStates = {};
+
+        const vector1 = new THREE.Vector3();
+        const vector2 = new THREE.Vector3();
+        const vector3 = new THREE.Vector3();
+
+        // Load audio
+        const listener = new THREE.AudioListener();
+        camera.add(listener);
+
+        const bgSound = new THREE.Audio(listener);
+        const flashlightSound = new THREE.Audio(listener);
+        const footstepSound = new THREE.Audio(listener);
+
+        const audioLoader = new THREE.AudioLoader();
+
+        audioLoader.load('bg.mp3', (buffer) => {
+            bgSound.setBuffer(buffer);
+            bgSound.setLoop(true);
+            bgSound.setVolume(0.4);
+        });
+
+        audioLoader.load('flashlight.mp3', (buffer) => {
+            flashlightSound.setBuffer(buffer);
+            flashlightSound.setVolume(0.5);
+        });
+
+        audioLoader.load('steps.mp3', (buffer) => {
+            footstepSound.setBuffer(buffer);
+            footstepSound.setVolume(0.5);
+            footstepSound.setLoop(true);
+        });
+
+        function initializeAudio() {
+            if (!audioInitialized) {
+                bgSound.play();
+                audioInitialized = true;
             }
-        </script>
+        }
 
-		<script type="module">
-			import * as THREE from 'three';
-			import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-			import { Octree } from 'three/addons/math/Octree.js';
-			import { Capsule } from 'three/addons/math/Capsule.js';
-			import { Pathfinding } from 'three-pathfinding';
+        document.addEventListener('keydown', (event) => {
+            keyStates[event.code] = true;
+            initializeAudio();
+            if (event.code === 'KeyF') {
+                SenterNyala = !SenterNyala;
+                senter.visible = SenterNyala;
+                flashlightSound.play();
+            }
+        });
 
-			const clock = new THREE.Clock();
-			const scene = new THREE.Scene();
-			scene.background = new THREE.Color(0x151515);
-			scene.fog = new THREE.Fog( 0x0C0C0C, 0, 50 );
+        document.addEventListener('keyup', (event) => {
+            keyStates[event.code] = false;
+            if (event.code === 'KeyW' || event.code === 'KeyA' || event.code === 'KeyS' || event.code === 'KeyD') {
+                footstepSound.stop();
+            }
+        });
 
-			const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000 );
-			camera.rotation.order = 'YXZ';
+        container.addEventListener('mousedown', () => {
+            document.body.requestPointerLock();
+            initializeAudio();
+            if (!document.getElementById('notification')) {
+                document.body.requestPointerLock();
+            }
+        });
 
-			const ambientLight = new THREE.AmbientLight(0xffffff, 0.04);
-			scene.add(ambientLight);
+        document.body.addEventListener('mousemove', (event) => {
+            if (document.pointerLockElement === document.body) {
+                camera.rotation.y -= event.movementX / 500;
+                camera.rotation.x -= event.movementY / 500;
+            }
+        });
 
-			const senter = new THREE.SpotLight(0xffffff);
-			senter.intensity = 0.6;
-			senter.angle = Math.PI/8;
-			senter.penumbra = 0.3;
-			senter.distance = 5;
-			senter.decay = 1;
-			senter.castShadow = true;
-			scene.add(senter);
-			let SenterNyala = false;
+        window.addEventListener('resize', onWindowResize);
 
-			const container = document.getElementById( 'container' );
-			const loadingScreen = document.getElementById('loading');
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
 
-			const renderer = new THREE.WebGLRenderer( { antialias: true } );
-			renderer.setPixelRatio( window.devicePixelRatio );
-			renderer.setSize( window.innerWidth, window.innerHeight );
-			renderer.setAnimationLoop( animate );
-			renderer.shadowMap.enabled = true;
-			renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-			renderer.toneMapping = THREE.NoToneMapping;//kalau hndk bagus ganti jadi "NeutralToneMapping"/"ACESFilmicToneMappin"g
-			container.appendChild( renderer.domElement );
+        function playerCollisions() {
+            const result = worldOctree.capsuleIntersect(playerCollider);
+            playerOnFloor = false;
+            if (result) {
+                playerOnFloor = result.normal.y > 0;
+                if (!playerOnFloor) {
+                    playerVelocity.addScaledVector(result.normal, -result.normal.dot(playerVelocity));
+                }
+                playerCollider.translate(result.normal.multiplyScalar(result.depth));
+            }
+        }
 
-			const GRAVITY = 30;
-			const STEPS_PER_FRAME = 5;
+        function updatePlayer(deltaTime) {
+            let damping = Math.exp(-4 * deltaTime) - 1;
+            if (!playerOnFloor) {
+                playerVelocity.y -= GRAVITY * deltaTime;
+                damping *= 0.1;
+            }
+            playerVelocity.addScaledVector(playerVelocity, damping);
+            const deltaPosition = playerVelocity.clone().multiplyScalar(deltaTime);
+            playerCollider.translate(deltaPosition);
+            playerCollisions();
+            camera.position.copy(playerCollider.end);
+            checkWallCollision();
 
-			const worldOctree = new Octree();
+            // Head bobbing effect
+            if (playerOnFloor && (keyStates['KeyW'] || keyStates['KeyA'] || keyStates['KeyS'] || keyStates['KeyD'])) {
+                const bobbingSpeed = 10;
+                const bobbingAmount = 0.02;
+                const time = clock.getElapsedTime();
+                camera.position.y += Math.sin(time * bobbingSpeed) * bobbingAmount;
 
-			const playerCollider = new Capsule( new THREE.Vector3( 0, 0.35,0  ), new THREE.Vector3( 0, 1, 0 ), 0.35 );
-			const playerVelocity = new THREE.Vector3();
-			const playerDirection = new THREE.Vector3();
+                if (!footstepSound.isPlaying) {
+                    footstepSound.play();
+                }
+            }
+        }
 
-			let playerOnFloor = false;
+        function updateSenter() {
+            senter.position.copy(camera.position);
+            senter.target.position.copy(camera.position).add(camera.getWorldDirection(playerDirection));
+            senter.target.updateMatrixWorld();
+        }
 
-			const keyStates = {};
+        function getForwardVector() {
+            camera.getWorldDirection(playerDirection);
+            playerDirection.y = 0;
+            playerDirection.normalize();
+            return playerDirection;
+        }
 
-			const vector1 = new THREE.Vector3();
-			const vector2 = new THREE.Vector3();
-			const vector3 = new THREE.Vector3();
+        function getSideVector() {
+            camera.getWorldDirection(playerDirection);
+            playerDirection.y = 0;
+            playerDirection.normalize();
+            playerDirection.cross(camera.up);
+            return playerDirection;
+        }
 
-			document.addEventListener('keydown', (event) => {
-				keyStates[event.code] = true;
-				if (event.code === 'KeyF') {
-					SenterNyala = !SenterNyala;
-					senter.visible = SenterNyala;
-				}
-			});
+        function controls(deltaTime) {
+            if (!controlsEnabled) return;
+            const speedDelta = deltaTime * (playerOnFloor ? 10 : 3); // Slower player speed
+            if (keyStates['KeyW']) {
+                playerVelocity.add(getForwardVector().multiplyScalar(speedDelta));
+            }
+            if (keyStates['KeyS']) {
+                playerVelocity.add(getForwardVector().multiplyScalar(-speedDelta));
+            }
+            if (keyStates['KeyA']) {
+                playerVelocity.add(getSideVector().multiplyScalar(-speedDelta));
+            }
+            if (keyStates['KeyD']) {
+                playerVelocity.add(getSideVector().multiplyScalar(speedDelta));
+            }
+        }
 
-			document.addEventListener('keyup', (event) => {
-				keyStates[event.code] = false;
-			});
+        const loader = new GLTFLoader();
+        loader.load('labirin1.glb', (gltf) => {
+            scene.add(gltf.scene);
+            worldOctree.fromGraphNode(gltf.scene);
+            gltf.scene.traverse(child => {
+                if (child.isMesh) {
+                    child.castShadow = false;
+                    child.receiveShadow = false;
+                    if (child.material.map) {
+                        child.material.map.anisotropy = 4;
+                    }
+                }
+            });
+            loadingScreen.style.display = 'none';
+            container.style.display = 'block';
+            updateHearts();
+            addWalls();
+            startTimer();
+            addWinObject();
+        });
 
-			container.addEventListener('mousedown', () => {
-				document.body.requestPointerLock();
-			} );
+        loader.load('monster.glb', function (gltf) {
+            model = gltf.scene;
+            animations = gltf.animations;
 
-			// document.addEventListener('mouseup', () => {
-			// 	nanti kalau ada
-			// } );
+            model.traverse(function (object) {
+                if (object.isMesh) object.castShadow = true;
+            });
 
-			document.body.addEventListener('mousemove', (event) => {
-				if (document.pointerLockElement === document.body) {
-					camera.rotation.y -= event.movementX / 500;
-					camera.rotation.x -= event.movementY / 500;
-				}
-			} );
+            const monsterWaypoints = [
+                [
+                    new THREE.Vector3(-7.086, 0, -0.325),
+                    new THREE.Vector3(-16.728, 0, -0.325)
+                ],
+                [
+                    new THREE.Vector3(-7.043, 0, 1.947),
+                    new THREE.Vector3(-7.043, 0, 6.955)
+                ]
+                // Tambahkan
+            ];
 
-			window.addEventListener('resize', onWindowResize);
+            monsterWaypoints.forEach(waypoints => {
+                const monster = SkeletonUtils.clone(model);
+                monster.position.copy(waypoints[0]);
+                scene.add(monster);
 
-			function onWindowResize() {
-				camera.aspect = window.innerWidth / window.innerHeight;
-				camera.updateProjectionMatrix();
-				renderer.setSize(window.innerWidth, window.innerHeight);
-			}
+                const monsterMixer = new THREE.AnimationMixer(monster);
+                monsterMixer.clipAction(animations[0]).play();
+                mixers.push(monsterMixer);
 
-			function playerCollisions() {
-				const result = worldOctree.capsuleIntersect(playerCollider);
-				playerOnFloor = false;
-				if (result) {
-					playerOnFloor = result.normal.y > 0;
-					if (!playerOnFloor) {
-						playerVelocity.addScaledVector(result.normal, -result.normal.dot(playerVelocity));
-					}
-					playerCollider.translate(result.normal.multiplyScalar(result.depth));
-				}
-			}
+                const monsterCollider = new Capsule(
+                    new THREE.Vector3(monster.position.x, monster.position.y + 0.35, monster.position.z),
+                    new THREE.Vector3(monster.position.x, monster.position.y + 1, monster.position.z),
+                    0.35
+                );
 
-			function updatePlayer(deltaTime) {
-				let damping = Math.exp(-4 * deltaTime) -1;
-				if (!playerOnFloor) {
-					playerVelocity.y -= GRAVITY * deltaTime;
-					damping *= 0.1;
-				}
-				playerVelocity.addScaledVector(playerVelocity, damping);
-				const deltaPosition = playerVelocity.clone().multiplyScalar(deltaTime);
-				playerCollider.translate(deltaPosition);
-				playerCollisions();
-				camera.position.copy(playerCollider.end);
-			}
+                monsters.push({
+                    model: monster,
+                    mixer: monsterMixer,
+                    collider: monsterCollider,
+                    waypoints: waypoints,
+                    currentWaypoint: 0
+                });
 
-			function updateSenter() {
-            	senter.position.copy(camera.position);
-            	senter.target.position.copy(camera.position).add(camera.getWorldDirection(playerDirection));
-            	senter.target.updateMatrixWorld();
-        	}
+                const helper = new THREE.BoxHelper(monster, 0xff0000);
+                scene.add(helper);
+            });
+        });
 
-			function getForwardVector() {
-				camera.getWorldDirection( playerDirection );
-				playerDirection.y = 0;
-				playerDirection.normalize();
-				return playerDirection;
-			}
+        function moveMonsters(deltaTime) {
+            monsters.forEach(monsterData => {
+                const monster = monsterData.model;
+                const waypoints = monsterData.waypoints;
+                const currentWaypoint = monsterData.currentWaypoint;
 
-			function getSideVector() {
-				camera.getWorldDirection( playerDirection );
-				playerDirection.y = 0;
-				playerDirection.normalize();
-				playerDirection.cross( camera.up );
-				return playerDirection;
-			}
+                const targetPosition = waypoints[currentWaypoint];
+                const direction = new THREE.Vector3().subVectors(targetPosition, monster.position);
+                const distance = direction.length();
 
-			function controls(deltaTime) {
-				const speedDelta = deltaTime * ( playerOnFloor ? 25 : 8 );
-				if (keyStates['KeyW']){
-					playerVelocity.add( getForwardVector().multiplyScalar( speedDelta ) );
-				}
-				if (keyStates['KeyS']){
-					playerVelocity.add( getForwardVector().multiplyScalar( - speedDelta ) );
-				}
-				if (keyStates['KeyA']){
-					playerVelocity.add( getSideVector().multiplyScalar( - speedDelta ) );
-				}
-				if (keyStates['KeyD']){
-					playerVelocity.add( getSideVector().multiplyScalar( speedDelta ) );
-				}
-			}
-			const loader = new GLTFLoader();
-			loader.load('labirin1.glb', (gltf) => {
-				scene.add(gltf.scene);
-				worldOctree.fromGraphNode(gltf.scene);
-				gltf.scene.traverse(child => {
-					if (child.isMesh) {
-						child.castShadow = false;
-						child.receiveShadow = false;
-						if (child.material.map) {
-							child.material.map.anisotropy = 4;
-						}
-					}
-				});
-				loadingScreen.style.display = 'none';
-				container.style.display = 'block';
-			});
+                if (distance < 0.1) {
+                    monsterData.currentWaypoint = (monsterData.currentWaypoint + 1) % waypoints.length;
+                } else {
+                    direction.normalize();
+                    monster.position.add(direction.multiplyScalar(deltaTime * 0.5)); // Slower monster speed
+                    monster.lookAt(targetPosition);
 
-			function teleportPlayerIfOob() {
-				if (camera.position.y <= -25) {
-					playerCollider.start.set(0, 0.35, 0);
-					playerCollider.end.set(0, 1, 0);
-					playerCollider.radius = 0.35;
-					camera.position.copy(playerCollider.end);
-					camera.rotation.set(0, 0, 0);
-				}
-			}
-			let pathfinding = new Pathfinding();
-			const ZONE = 'level1';
-			const navMeshUrl = 'labirin1NavMesh.glb';
+                    monsterData.collider.start.set(monster.position.x, monster.position.y + 0.35, monster.position.z);
+                    monsterData.collider.end.set(monster.position.x, monster.position.y + 1, monster.position.z);
 
-			const waypoints = [
-			new THREE.Vector3(-9.8, 0, 10.3),
-			new THREE.Vector3(-16.8, 0, 21.8),
-			new THREE.Vector3(-0.2, 0, 5.5),
-			new THREE.Vector3(-21.5, 0, 0.67),
-			//tempat yang akan didatangi monster
-			];
+                    const result = worldOctree.capsuleIntersect(monsterData.collider);
+                    if (result) {
+                        monster.position.addScaledVector(result.normal, result.depth);
+                        monsterData.collider.translate(result.normal.multiplyScalar(result.depth));
+                    }
+                }
 
-			const monsterStartPositions = [
-			new THREE.Vector3(-21, 0, 0.5),
-			new THREE.Vector3(-2.5, 0, 2.8),
-			new THREE.Vector3(-16.6, 0, 14.7),
-			//Tambahkan jika ingin menambahkan lebih banyak monster dan posisinya
-			];
+                monsterData.mixer.update(deltaTime);
+            });
+        }
 
-			const monsters = [];
-			const mixers = [];
-			const monsterPaths = [];
-			const monsterPathIndices = [];
-			const waypointIndices = [];
+        function updateHearts() {
+            heartsContainer.innerHTML = '';
+            for (let i = 0; i < playerHealth; i++) {
+                const heart = document.createElement('img');
+                heart.src = 'heart.jpg';
+                heart.className = 'heart';
+                heartsContainer.appendChild(heart);
+            }
+        }
 
-			loader.load(navMeshUrl, (gltf) => {
-				const navMesh = gltf.scene;
-				pathfinding.setZoneData(ZONE, Pathfinding.createZone(navMesh));
+        function checkPlayerMonsterCollision() {
+            monsters.forEach(monsterData => {
+                const distance = playerCollider.end.distanceTo(monsterData.collider.start);
+                if (distance < 1) {
+                    playerHealth -= 1;
+                    updateHearts();
+                    if (playerHealth <= 0) {
+                        playerDead();
+                    }
+                }
+            });
+        }
 
-				monsterStartPositions.forEach((startPosition, index) => {
-					loader.load('monster.glb', (gltf) => {
-						const monster = gltf.scene;
-						monster.position.copy(startPosition);
-						scene.add(monster);
-						monsters.push(monster);
+        function checkWallCollision() {
+            const walls = scene.children.filter(child => child.userData.isWall);
+            for (const wall of walls) {
+                const distance = playerCollider.end.distanceTo(wall.position);
+                if (distance < 1) {
+                    if (!currentMathQuestion) {
+                        currentMathQuestion = generateMathQuestion();
+                    }
+                    displayMathQuestion(wall);
+                    playerVelocity.set(0, 0, 0);
+                    controlsEnabled = false;
+                    break;
+                }
+            }
+        }
 
-						const mixer = new THREE.AnimationMixer(monster);
-						mixers.push(mixer);
-						const walkAnimation = gltf.animations.find(anim => anim.name === 'anim');
-						const monsterAction = mixer.clipAction(walkAnimation);
-						monsterAction.play();
+        function playerDead() {
+            notification.style.display = 'flex';
+            document.exitPointerLock();
+            clearInterval(timerInterval);
+        }
 
-						waypointIndices[index] = 0;
-						monsterPaths[index] = [];
-						findNextPath(index);
-					});
-				});
-			});
+        respawnButton.addEventListener('click', () => {
+            notification.style.display = 'none';
+            respawnPlayer();
+            document.body.requestPointerLock();
+        });
 
-			function findNextPath(monsterIndex) {
-				waypointIndices[monsterIndex] = (waypointIndices[monsterIndex] + 1) % waypoints.length;
-				const targetPosition = waypoints[waypointIndices[monsterIndex]];
-				monsterPaths[monsterIndex] = pathfinding.findPath(monsters[monsterIndex].position, targetPosition, ZONE, 1);
-				monsterPathIndices[monsterIndex] = 0;
-			}
+        exitButton.addEventListener('click', () => {
+            window.close();
+        });
 
-			function moveMonster(deltaTime, monsterIndex) {
-				const monster = monsters[monsterIndex];
-				const path = monsterPaths[monsterIndex];
-				let pathIndex = monsterPathIndices[monsterIndex];
+        function respawnPlayer() {
+            playerHealth = 3;
+            playerScore = 0;
+            wallsOpened = 0;
+            updateHearts();
+            playerCollider.start.set(0, 0.35, 0);
+            playerCollider.end.set(0, 1, 0);
+            playerVelocity.set(0, 0, 0);
+            camera.position.copy(playerCollider.end);
+            startTimer();
+        }
 
-				if (path && path.length) {
-					const targetPosition = path[pathIndex];
-					const direction = targetPosition.clone().sub(monster.position).normalize();
-					const moveDistance = 2 * deltaTime;  // Adjust speed here
-					monster.position.add(direction.multiplyScalar(moveDistance));
+        function generateMathQuestion() {
+            const num1 = Math.floor(Math.random() * 10) + 1;
+            const num2 = Math.floor(Math.random() * 10) + 1;
+            const correctAnswer = Math.random() > 0.5 ? num1 + num2 : num1 - num2;
+            const question = `${num1} ${correctAnswer === num1 + num2 ? '+' : '-'} ${num2}`;
+            const incorrectAnswer1 = correctAnswer + (Math.floor(Math.random() * 5) + 1);
+            const incorrectAnswer2 = correctAnswer - (Math.floor(Math.random() * 5) + 1);
+            const answers = [correctAnswer, incorrectAnswer2, incorrectAnswer1].sort(() => Math.random() - 0.5);
 
-					if (monster.position.distanceTo(targetPosition) < 0.1) {
-						pathIndex++;
-						if (pathIndex >= path.length) {
-							findNextPath(monsterIndex);
-						}
-					}
-					monsterPathIndices[monsterIndex] = pathIndex;
-				}
-			}
-			function animate() {
-				const deltaTime = Math.min(0.05, clock.getDelta()) / STEPS_PER_FRAME;
-				for (let i = 0; i < STEPS_PER_FRAME; i++) {
-					controls(deltaTime);
-					updatePlayer(deltaTime);
-					teleportPlayerIfOob();
-				}
-				updateSenter();
+            return {
+                question,
+                answers,
+                correctAnswer
+            };
+        }
 
-				mixers.forEach((mixer, index) => {
-				mixer.update(clock.getDelta());
-				moveMonster(clock.getDelta(), index);
-				});
+        function displayMathQuestion(wall) {
+            disablePointerLock(); // Disable pointer lock when showing the math question
+            questionText.innerText = currentMathQuestion.question;
+            option1.innerText = currentMathQuestion.answers[0];
+            option2.innerText = currentMathQuestion.answers[1];
+            option3.innerText = currentMathQuestion.answers[2];
 
-				renderer.render(scene, camera);
-			}
-		</script>
-	</body>
+            mathQuestion.style.display = 'block';
+
+            option1.onclick = () => checkAnswer(currentMathQuestion.answers[0], currentMathQuestion.correctAnswer, wall);
+            option2.onclick = () => checkAnswer(currentMathQuestion.answers[1], currentMathQuestion.correctAnswer, wall);
+            option3.onclick = () => checkAnswer(currentMathQuestion.answers[2], currentMathQuestion.correctAnswer, wall);
+        }
+
+        function disablePointerLock() {
+            if (document.pointerLockElement) {
+                document.exitPointerLock();
+            }
+        }
+
+        function checkAnswer(selectedAnswer, correctAnswer, wall) {
+            if (selectedAnswer === correctAnswer) {
+                mathQuestion.style.display = 'none';
+                scene.remove(wall);
+                controlsEnabled = true;
+                playerScore += 10;
+                wallsOpened += 1;
+                currentMathQuestion = null; // Reset the current math question
+            } else {
+                playerHealth -= 1;
+                updateHearts();
+                if (playerHealth <= 0) {
+                    playerDead();
+                } else {
+                    currentMathQuestion = generateMathQuestion(); // Generate a new question only if the answer is wrong
+                    displayMathQuestion(wall); // Display the new question
+                }
+            }
+        }
+
+        function addWalls() {
+            const wallGeometry = new THREE.BoxGeometry(2, 7.5, 0.36);
+            const wallMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, opacity: 0.5, transparent: true });
+            const wall = new THREE.Mesh(wallGeometry, wallMaterial);
+            wall.position.set(-7, 1, -1.487);
+            wall.userData.isWall = true;
+            scene.add(wall);
+        }
+
+        function addWinObject() {
+            const sphereGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+            const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+            const winSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+
+            const pointLight = new THREE.PointLight(0xffff00, 1, 5);
+            winSphere.add(pointLight);
+
+            winSphere.position.set(-14, 1, 4.2);
+            scene.add(winSphere);
+
+            const winSphereCollider = new Capsule(
+                new THREE.Vector3(winSphere.position.x, winSphere.position.y, winSphere.position.z),
+                new THREE.Vector3(winSphere.position.x, winSphere.position.y + 1, winSphere.position.z),
+                0.5
+            );
+
+            winSphere.userData.collider = winSphereCollider;
+
+            objects.push(winSphere);
+        }
+
+        function checkWinCondition() {
+            objects.forEach(object => {
+                if (object.userData.collider) {
+                    const distance = playerCollider.end.distanceTo(object.userData.collider.start);
+                    if (distance < 1) {
+                        displayWinNotification();
+                        clearInterval(timerInterval);
+                    }
+                }
+            });
+        }
+
+        function displayWinNotification() {
+            winNotification.style.display = 'flex';
+            scoreText.innerText = `Score: ${playerScore}\nWalls Opened: ${wallsOpened}\nTime: ${timerElement.innerText}`;
+            document.exitPointerLock();
+        }
+
+        mainMenuButton.addEventListener('click', () => {
+            window.location.href = '#';//ganti dengan link main menu
+        });
+
+        leaderboardButton.addEventListener('click', () => {
+            window.location.href = '#';//ganti dengan link leaderboard
+        });
+
+        function startTimer() {
+            gameStartTime = Date.now();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function updateTimer() {
+            const elapsedTime = Math.floor((Date.now() - gameStartTime) / 1000);
+            const minutes = Math.floor(elapsedTime / 60).toString().padStart(2, '0');
+            const seconds = (elapsedTime % 60).toString().padStart(2, '0');
+            timerElement.innerText = `${minutes}:${seconds}`;
+        }
+
+        function animate() {
+            const deltaTime = Math.min(0.05, clock.getDelta()) / STEPS_PER_FRAME;
+            for (let i = 0; i < STEPS_PER_FRAME; i++) {
+                controls(deltaTime);
+                updatePlayer(deltaTime);
+                moveMonsters(deltaTime);
+                checkPlayerMonsterCollision();
+                checkWinCondition();
+            }
+            updateSenter();
+            for (const mixer of mixers) mixer.update(deltaTime);
+
+            renderer.render(scene, camera);
+        }
+    </script>
+</body>
 </html>
