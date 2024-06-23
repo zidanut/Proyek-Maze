@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Maze Adventure</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700&family=Oswald:wght@200..700&family=Poetsen+One&family=Tauri&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="revisi_csshome.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Jaro:opsz@6..72&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jacquard+12&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700&family=Oswald:wght@200..700&family=Poetsen+One&family=Seymour+One&family=Tauri&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <audio id="background-music" src="Out of Flux - Descending Chamber.mp3" type="audio/mp3"></audio>
+    <div class="lights-out"></div>
+    <div class="navbar">
+        <div class="profile" id="profile">
+            <img src="blank-profile-picture-973460-1280-605aadc08ede4874e1153a12.jpeg" alt="" class="image" id="profileImage">
+            <h4 id="profileName">My Profile</h4>
+        </div>
+        <div class="name-game">
+            <h1>Math Maze Adventure</h1>
+        </div>
+    </div>
+    <div class="box-1">
+        <div class="box-awal">
+            <div class="play">
+                <button id="startButton" class="btn mulai">START</button>
+                <button class="bantuan" id="bantuanButton">Bantuan</button>
+                <button class="deskripsi" id="bantuanDeskripsi">Deskripsi</button>
+                <button class="leaderboard">Leaderboard</button>
+            </div>
+        </div>
+    </div>
+    <div class="container-username" id="containerUsername">
+        <div class="box-username">
+            <h2>Masukkan Username</h2>
+            <input type="text" id="username" name="" placeholder="Username" required>
+            <h2>Ubah Foto Profile</h2>
+            <input type="file" id="profileImageInput" accept="image/*">
+            <div class="btns">
+                <div class="btna" id="ubah">Ubah</div>
+                <div class="btna" id="batal">Batal</div>
+            </div>
+        </div>
+    </div>
+    <div class="container-box-keyboard" id="boxKeyboard">
+        <div class="box-keyboard">
+            <i class="fas fa-close" id="closeKeyboard"></i>
+            <div class="keyboard">
+                <img src="WhatsApp Image 2024-06-21 at 20.44.13.jpeg" alt="">
+            </div>
+        </div>
+    </div>
+    <div class="container-history" id="containerHistory">
+        <div class="box-history" id="boxHistory">
+            <div class="history">
+                <li id="closeHistory">X</li>
+                <h2>STORY</h2>
+                <p> 
+                    Pada suatu musim panas yang cerah, seorang anak bernama Aria sedang berlibur bersama keluarganya di sebuah hotel tua yang megah. Hotel ini memiliki daya tarik utama berupa labirin misterius di ruang bawah tanahnya. Meski telah diperingatkan oleh orang tuanya, Aria yang penuh rasa penasaran memutuskan untuk menjelajahi labirin tersebut sendirian.
+
+                    Saat memasuki labirin, Aria langsung merasakan suasana yang mencekam. Dinding-dinding batu berlumut, pencahayaan redup dari obor yang jarang-jarang, serta suara gemericik air dari kejauhan membuat suasana semakin menegangkan. Aria berjalan semakin dalam dan tanpa sadar tersesat.
+                    
+                    Tiba-tiba, muncul sebuah monster besar dengan taring tajam dan mata merah menyala. Monster itu berbicara, "Jika ingin lewat, kau harus menjawab soal matematika. Jika salah, kau akan tinggal di sini selamanya."
+                    
+                    Aria merasa lega karena dia cukup pintar di sekolah. "Baiklah, aku siap menjawab soalmu," katanya dengan suara bergetar.
+                    
+                    "Berapa hasil dari 7 dikali 8?" tanya monster itu.
+                    
+                    "56!" jawab Aria dengan yakin. Monster itu menghilang dalam asap tebal, dan Aria melanjutkan perjalanannya.
+                    
+                    Di tikungan berikutnya, Aria bertemu monster lain yang menanyakan, "Berapa hasil dari 144 dibagi 12?"
+                    
+                    "12!" jawab Aria, dan monster itu lenyap. Setiap belokan atau ruangan baru dihadapkan dengan monster yang menantangnya dengan soal matematika. Ada soal penjumlahan, pengurangan, perkalian, pembagian, dan soal cerita yang rumit. Dengan setiap jawaban yang benar, Aria semakin percaya diri.
+                    
+                    Akhirnya, Aria tiba di sebuah pintu besar. Sebuah suara menggema, "Jika kau dapat memecahkan ini, pintu akan terbuka dan kau akan bebas. Berapa akar kuadrat dari 256?"
+                    
+                    Aria berpikir keras dan menjawab, "16!"
+                    
+                    Pintu besar itu perlahan terbuka, memperlihatkan cahaya terang di baliknya. Aria berlari keluar dan mendapati dirinya kembali di lobi hotel, disambut pelukan hangat dari keluarganya yang sudah mencarinya sejak tadi.
+                    
+                    Sejak hari itu, Aria dikenal sebagai anak pemberani yang berhasil menaklukkan labirin misterius hotel dan menyelamatkan diri dengan kecerdasan matematikanya. Petualangan ini membuat Aria semakin mencintai matematika dan selalu siap menghadapi tantangan apa pun dengan percaya diri.                    
+                    <br><button type="button" id="iniHistory">Main</button></h2>
+                </p>
+            </div>
+        </div>
+    </div>
+    <audio autoplay loop muted src="Out of Flux - Descending Chamber.mp3"></audio>
+    <button id="boxBatal" class="btn"></button>
+    <div class="container-deskripsi" id="containerDeskripsi">
+        <div class="box-deskripsi">
+            <div class="fas fa-close" id="closeDeskripsi"></div>
+            <div class="slide">
+                <img src="WhatsApp Image 2024-06-22 at 11.55.58.jpeg" alt="">
+            </div>
+            <div class="slide">
+                <img src="WhatsApp Image 2024-06-22 at 11.57.24.jpeg" alt="">
+            </div>
+            <div class="slide">
+                <img src="WhatsApp Image 2024-06-22 at 11.55.58 (2).jpeg" alt="">
+            </div>
+            <div class="slide">
+                <img src="WhatsApp Image 2024-06-22 at 11.55.59.jpeg" alt="">
+            </div>
+        </div>
+        <button class="prev" onclick="plusSlides(-1)">&#10094;</button>
+        <button class="next" onclick="plusSlides(1)">&#10095;</button>
+    </div>
+    <div id="boxLevel" class="level" style="display: none;">
+        <li class="fas fa-close" id="searchClose"></li>
+        <div class="lev">
+            <button class="btn" id="btn1">1</button>
+            <button class="btn">2</button>
+            <button class="fas fa-lock"></button>
+            <button class="fas fa-lock"></button>
+            <button class="fas fa-lock"></button>
+            <button class="fas fa-lock"></button>
+            <button class="fas fa-lock"></button>
+            <button class="fas fa-lock"></button>
+            <button class="fas fa-lock"></button>
+            <button class="fas fa-lock"></button>
+        </div>
+    </div>
+    <div class="sound">
+        <i id="soundIcon" class="fas fa-volume-up" onclick="toggleSound()"></i>
+        <i id="soundMusic" class="fas fa-music" ></i>
+    </div>
+    <audio id="soundEffect">
+        <source src="X2Download.app - Click - Sound Effect (HD) (128 kbps).mp3" type="audio/mpeg">
+    </audio>
+    <!-- Modal for enlarged profile picture -->
+    <div id="imageModal" class="modal">
+        <span class="close" id="closeModal">&times;</span>
+        <img class="modal-content" id="modalImage">
+        <div id="caption"></div>
+    </div>
+    <script src="revisi_script.js"></script>
+</body>
+</html>

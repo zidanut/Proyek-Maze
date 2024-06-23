@@ -1,0 +1,585 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-image: url("_029f2d68-e04c-4a94-88d7-02902de50e14.jpeg");
+    font-family: 'Poetsen One', sans-serif;
+    color: #ffffff;
+    background-position: center ;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+}
+
+.profile {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border: 2px solid white;
+    background-color: #0C0C0C;
+    cursor: pointer;
+}
+
+.profile h4 {
+    margin-left: 10px;
+    font-size: 16px;
+}
+
+/* Modal styling */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    padding-top: 60px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+.modal-content {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+}
+
+#caption {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+    text-align: center;
+    color: #ccc;
+    padding: 10px 0;
+
+}
+
+.modal-content, #caption {
+    animation-name: zoom;
+    animation-duration: 0.6s;
+}
+
+@keyframes zoom {
+    from {transform: scale(0)}
+    to {transform: scale(1)}
+}
+
+.close {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.image {
+    height: 60px;
+    width: 60px;
+    border-radius: 50%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    border-style: ridge;
+}
+
+.name-game {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    border-style: 2px solid inset;
+}
+
+.name-game h1 {
+    font-size: 3rem;
+    font-family: "Permanent Marker", cursive;
+    font-style: normal; 
+    text-shadow: 
+        -1px -1px 0 #000,  
+        2px -1px 0 #000,
+        -1px 1px 0 #000,
+        2px 1px 0 #000;
+    rotate: 5;
+}
+
+.nama input{
+    border:none;
+    background: transparent;
+    border-radius: 20px;
+    outline: none;
+    color: white;
+    font-weight: bold;
+}
+
+.nama {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 20px;
+}
+
+.nama label, .nama input {
+    margin-bottom: 10px;
+}
+
+.nama input {
+    flex: 1;
+    margin-right: 10px;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #00adb5;
+}
+
+.nama button {
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #00adb5;
+    cursor: pointer;
+    background-color: #00adb5;
+    color: #222831;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.nama button:hover {
+    background-color: #007f86;
+}
+
+.nama .button-container {
+    display: flex;
+    gap: 10px;
+}
+
+.box-1 {
+    display: flex;
+    justify-content: center;
+}
+
+.box-awal {
+    position: absolute;
+    margin-top: 15%;
+    padding: 2rem;
+    border-radius: 10px;
+    }
+    
+.play {
+        text-align: center;
+        display: grid;
+        grid-gap: 20px;
+        font-size: 20px;
+        }
+
+.play button {
+    height: 40px;
+    width: 200px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 20px;
+    color: white;
+    border: 3px solid white;
+    transition: background-color 0.3s;
+    font-family: "Jaro", sans-serif;
+    background-color: #000;
+}
+
+.play button:hover {
+    background-color: #007f86;
+}
+
+.box-nama {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid white;
+    background-color: #31363F;
+    position: absolute;
+    width: 20%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 20%;
+}
+
+.nama {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.nama label, .nama input, .nama button {
+    margin-bottom: 10px;
+}
+
+.nama input, .nama button {
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #00adb5;
+}
+
+.nama button {
+    cursor: pointer;
+    background-color: #00adb5;
+    color: #222831;
+    font-weight: bold;
+}
+
+.nama button:hover {
+    background-color: #007f86;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    color: #00adb5;
+}
+
+.close:hover {
+    color: #007f86;
+}
+.container-box-keyboard {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 80vh;/* Full height to allow vertical centering */
+}
+.container-box-keyboard .box-keyboard i{
+    position: absolute;
+    top: 15px;
+    right: 20px;
+}
+.box-keyboard{
+    background-color: rgb(50,100,100);
+    padding: 40px;
+    width: 40%;
+    margin: auto;   
+    position: relative;
+    align-items: center;
+    border: 2px solid white;
+}
+
+.keyboard img{
+    width: 100%;
+}
+
+.level {
+    background-color: #000;
+    height: 30%;
+    width: 30%;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    text-shadow: #222831;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 20; /* Ensure it's in front */
+    border: 2px solid white;
+}
+
+.level .lev {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 30px;
+}
+
+.level .lev button {
+    border-style: dotted;
+    padding: 20px;
+    background-color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+
+.level .fa-close{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.level .lev button:hover {
+    background-color: #393e46;
+}
+
+.sound{
+    position: absolute;
+    right: 10px;
+    padding: 20px;
+    top: 20px;
+    display: grid;
+    gap: 20px;
+}
+
+.container-username{
+    position:absolute;
+    right: 35%;
+    top: 40%;
+    z-index: 1;
+    display: none;
+}
+
+.container-username .box-username{
+    display: grid;
+    padding: 30px;
+    border-radius: 10px;
+    background-color: black;
+    text-align: center;
+    color: white;
+    gap: 40px;
+    border: 2px solid #ffffff;
+}
+
+.box-username #username{
+    padding: 20px;
+    user-select: none;
+    height: 50px;
+    width: 400px;
+    border-radius: 5px;
+    border: none;
+    border: 2px solid rgb(220, 218, 218);
+    outline: none;
+    font-size: 20px;
+}
+
+.box-username p{
+    border-bottom: 2px solid black;
+}
+
+.box-username input::placeholder{
+	font-size: 20px;
+}
+
+.btns{
+	display: flex;
+	justify-content: space-between;
+}
+
+.btna{
+	font-size: 15px;
+	padding: 13px 50px;
+	border: 2px solid white;
+	background-color: black;
+	color: white;
+	cursor: pointer;
+	border-radius: 5px;
+}
+.btna:hover{
+	color: white;
+	background-color: black;
+}
+
+@media (max-width: 1200px) {
+    .name-game h1 {
+        font-size: 2rem;
+    }
+    .play button {
+        width: 180px;
+    }
+}
+
+@media (max-width: 768px) {
+    .name-game h1 {
+        font-size: 2rem;
+    }
+    .box-awal {
+        margin-top: 25%;
+        padding: 1rem;
+    }
+    .play button {
+        width: 140px;
+    }
+    .box-nama {
+        width: 40%;
+        height: 30%;
+    }
+    .name-game{
+        border-style: none;
+    }
+  
+}
+
+@media (max-width: 576px) {
+    .navbar {
+        padding: 10px;
+    }
+    .name-game h1 {
+        font-size: 2rem;
+    }
+    .name-game{
+        border-style: none;
+    }
+    .box-awal {
+        margin-top: 30%;
+       padding: 20px;
+    }
+    .play button {
+        width: 120px;
+        font-size: 0.9rem;
+    }
+    .box-nama {
+        width: 50%;
+        height: 20%;
+    }
+    .level {
+        width: 80%;
+        height: 40%;
+    }
+    .level .lev {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .profile{
+        width: 23%;
+        height: 10%;
+    }
+    .profile h4{
+        font-size: 15px;
+    }
+}
+
+.container-deskripsi {
+    position: relative;
+    width: 700px;
+    height: 400px;
+    margin: auto;
+    overflow: hidden;
+    background-color: #007f86;
+    display: none;
+    align-items: center;
+}
+
+.box-deskripsi {
+    display: flex;
+    width: 100%;
+    transition: transform 0.5s ease-in-out;
+}
+
+.slide {
+    min-width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center; /* Center the image horizontally */
+    align-items: center;   /* Center the image vertically */
+}
+
+.slide img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* Ensure the image scales nicely within the slide */
+}
+.prev, .next {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    width: auto;
+    padding: 16px;
+    margin-top: -22px;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    transition: 0.6s ease;
+    border-radius: 0 3px 3px 0;
+    user-select: none;
+}
+
+.next {
+    right: 0;
+    border-radius: 3px 0 0 3px;
+}
+
+.prev:hover, .next:hover {
+    background-color: rgba(0,0,0,0.8);
+}
+
+#closeDeskripsi{
+    position: absolute;
+    right: 20px;
+    top: 10px;
+}
+
+.container-history {
+    margin: auto;
+    width: 55%;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    display: none;
+}
+
+.container-history .history{
+    flex:1 0 100%;
+    margin: 5%;
+}
+
+.history p {
+    padding: 40px;
+    text-align: justify;
+    border: 2px solid white;
+    background-color: #000;
+}
+
+#closeHistory{
+    font-size: 200%;
+    color: #007f86;
+    font-weight: bold;
+    list-style-type: none;
+    cursor: pointer;
+    position: relative;
+    left: 96%;
+    top: 32px;
+}
+
+.history h2{
+    position: fixed;
+    text-align: center;
+    left: 50%;
+}
+
+.history li{
+    position: absolute;
+    top: 10px;
+}
+#iniHistory{
+    margin: 10px;
+    left: 80%;
+    position: relative;
+    top: 10px;
+    background-color: rgb(40, 240, 50);
+    padding: 10px;
+    width: 20%;
+    border-style: dashed;
+}
+
+#iniHistory:active{
+    opacity: 0.5;
+}
+
