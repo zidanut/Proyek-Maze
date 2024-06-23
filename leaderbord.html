@@ -42,7 +42,7 @@
                 if (playerName && playerScore) {
                     push(ref(database, 'scores'), {
                         name: playerName,
-                        score: playerScore
+                        score: parseInt(playerScore)
                     });
 
                     playerNameInput.value = '';
@@ -51,12 +51,20 @@
             });
 
             onValue(ref(database, 'scores'), (snapshot) => {
-                scoreList.innerHTML = '';
+                const scores = [];
                 snapshot.forEach((childSnapshot) => {
                     const score = childSnapshot.val();
+                    scores.push(score);
+                });
+
+                // Urutkan skor dalam urutan menurun
+                scores.sort((a, b) => b.score - a.score);
+
+                scoreList.innerHTML = '';
+                scores.forEach((score, index) => {
                     const li = document.createElement('li');
                     li.className = 'list-group-item';
-                    li.textContent = `${score.name}: ${score.score}`;
+                    li.textContent = `${index + 1}. ${score.name}: ${score.score}`;
                     scoreList.appendChild(li);
                 });
             });
@@ -78,14 +86,14 @@
             background: #333;
             color: #fff;
             border-radius: 10px 10px 0 0;
-            padding: 1.5rem;
+            padding: 1rem;
         }
         .card-header h1 {
             margin: 0;
-            font-size: 2rem;
+            font-size: 1.5rem;
         }
         .card-body {
-            padding: 2rem;
+            padding: 1.5rem;
         }
         .form-control {
             background: #2e2e2e;
@@ -98,7 +106,7 @@
             background: #007bff;
             border: none;
             border-radius: 5px;
-            padding: 0.75rem;
+            padding: 0.5rem;
             font-size: 1rem;
         }
         .btn-primary:hover {
@@ -108,41 +116,41 @@
             background: #007bff;
             border: none;
             border-radius: 5px;
-            padding: 0.75rem;
+            padding: 0.5rem;
             font-size: 1rem;
             display: block;
-            margin: 2rem auto;
+            margin: 1.5rem auto;
         }
         .btn-back:hover {
             background: #0056b3;
         }
         h2 {
-            margin: 1.5rem 0;
-            font-size: 1.5rem;
+            margin: 1rem 0;
+            font-size: 1.25rem;
         }
         .list-group-item {
             background: #2e2e2e;
             border: none;
-            padding: 1rem;
+            padding: 0.75rem;
             margin-bottom: 0.5rem;
             border-radius: 5px;
             color: #ffffff;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
         }
         .container {
-            max-width: 600px;
-            margin-top: 5rem;
+            max-width: 500px;
+            margin-top: 3rem;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="card">
+        <div class="card mb-3">
             <div class="card-header text-center">
-                <h1>Game Score Tracker</h1>
+                <h1>Submit Score</h1>
             </div>
             <div class="card-body">
-                <form id="score-form" class="mb-4">
+                <form id="score-form">
                     <div class="form-group">
                         <input type="text" id="player-name" class="form-control" placeholder="Player Name" required>
                     </div>
@@ -151,7 +159,13 @@
                     </div>
                     <button type="submit" class="btn btn-primary btn-block">Submit Score</button>
                 </form>
-                <h2 class="text-center">Scores</h2>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header text-center">
+                <h1>Leaderboard</h1>
+            </div>
+            <div class="card-body">
                 <ul id="score-list" class="list-group"></ul>
                 <button class="btn btn-primary btn-back" onclick="window.history.back()">Back</button>
             </div>
