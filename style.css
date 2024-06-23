@@ -1,0 +1,52 @@
+body {
+    font-family: 'Courier New', Courier, monospace;
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+.recap-container {
+    background-color: #34495e;
+    border: 5px solid #e74c3c;
+    border-radius: 15px;
+    padding: 20px;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+.recap-header {
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #e74c3c;
+}
+.recap-item {
+    background-color: #16a085;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+.recap-item h3 {
+    margin: 0;
+    color: #ecf0f1;
+}
+.recap-item p {
+    margin: 5px 0 0;
+    color: #bdc3c7;
+}
+.footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.9em;
+}
+.footer a {
+    color: black;
+    transition: color 0.3s;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif
+}
+.footer a:hover{
+    color: red;
+}

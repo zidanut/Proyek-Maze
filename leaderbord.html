@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Score Tracker</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBw8y3-rHekvNvt3tCcnW6rhRCFvupWtuc",
+            authDomain: "tugas-akhir-web1-6332e.firebaseapp.com",
+            projectId: "tugas-akhir-web1-6332e",
+            storageBucket: "tugas-akhir-web1-6332e.appspot.com",
+            messagingSenderId: "519826560712",
+            appId: "1:519826560712:web:e91c1b0e9dbf0e38b777fd",
+            databaseURL: "https://tugas-akhir-web1-6332e-default-rtdb.firebaseio.com/" // Add this line for Realtime Database
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Add score to the database
+        document.addEventListener('DOMContentLoaded', () => {
+            const scoreForm = document.getElementById('score-form');
+            const playerNameInput = document.getElementById('player-name');
+            const playerScoreInput = document.getElementById('player-score');
+            const scoreList = document.getElementById('score-list');
+
+            scoreForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const playerName = playerNameInput.value.trim();
+                const playerScore = playerScoreInput.value.trim();
+
+                if (playerName && playerScore) {
+                    push(ref(database, 'scores'), {
+                        name: playerName,
+                        score: playerScore
+                    });
+
+                    playerNameInput.value = '';
+                    playerScoreInput.value = '';
+                }
+            });
+
+            onValue(ref(database, 'scores'), (snapshot) => {
+                scoreList.innerHTML = '';
+                snapshot.forEach((childSnapshot) => {
+                    const score = childSnapshot.val();
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item';
+                    li.textContent = `${score.name}: ${score.score}`;
+                    scoreList.appendChild(li);
+                });
+            });
+        });
+    </script>
+    <style>
+        body {
+            background: #121212;
+            color: #ffffff;
+            font-family: 'Arial', sans-serif;
+        }
+        .card {
+            background: #1e1e1e;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+        .card-header {
+            background: #333;
+            color: #fff;
+            border-radius: 10px 10px 0 0;
+            padding: 1.5rem;
+        }
+        .card-header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+        .card-body {
+            padding: 2rem;
+        }
+        .form-control {
+            background: #2e2e2e;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+        .btn-primary {
+            background: #007bff;
+            border: none;
+            border-radius: 5px;
+            padding: 0.75rem;
+            font-size: 1rem;
+        }
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+        h2 {
+            margin: 1.5rem 0;
+            font-size: 1.5rem;
+        }
+        .list-group-item {
+            background: #2e2e2e;
+            border: none;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 5px;
+            color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .container {
+            max-width: 600px;
+            margin-top: 5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header text-center">
+                <h1>Game Score Tracker</h1>
+            </div>
+            <div class="card-body">
+                <form id="score-form" class="mb-4">
+                    <div class="form-group">
+                        <input type="text" id="player-name" class="form-control" placeholder="Player Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="number" id="player-score" class="form-control" placeholder="Score" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Submit Score</button>
+                </form>
+                <h2 class="text-center">Scores</h2>
+                <ul id="score-list" class="list-group"></ul>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
