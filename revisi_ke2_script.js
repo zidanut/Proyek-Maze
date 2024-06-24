@@ -1,3 +1,5 @@
+let nama = '';
+
 document.addEventListener('DOMContentLoaded', function() {
     const audio = document.getElementById('soundEffect');
     const profileName = document.getElementById('profileName');
@@ -33,11 +35,6 @@ document.addEventListener('DOMContentLoaded', function() {
         playSound();
     });
 
-    document.getElementById('searchClose').addEventListener('click', function() {
-        document.getElementById('boxLevel').style.display = 'none';
-        playSound();
-    });
-
     document.getElementById('profileName').addEventListener('click', function() {
         document.getElementById('containerUsername').style.display = 'flex';
         playSound();
@@ -56,18 +53,18 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('btn1').addEventListener('click', function (){
         document.getElementById('boxLevel').style.display = 'none';
         document.getElementById('containerHistory').style.display = 'flex';
-        playSound()
+        playSound();
     });
 
     document.getElementById('closeHistory').addEventListener('click', function (){
         document.getElementById('containerHistory').style.display = 'none';
-        playSound()
-    })
+        playSound();
+    });
 
     document.getElementById('ubah').addEventListener('click', function() {
-        const username = usernameInput.value.trim();
-        if (username) {
-            profileName.textContent = username;
+        nama = usernameInput.value.trim(); // Update the global variable with the username
+        if (nama) {
+            profileName.textContent = nama;
         }
         const file = profileImageInput.files[0];
         if (file) {
@@ -98,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
             audio.play();
         }
     }
-  
+
     document.getElementById('soundIcon').addEventListener('click', function() {
         toggleSound();
     });
@@ -116,26 +113,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Profile image click to show modal
     profileImage.addEventListener('click', function() {
         modal.style.display = 'block';
         modalImage.src = profileImage.src;
         captionText.innerHTML = profileName.textContent;
     });
 
-    // Close the modal
     closeModal.addEventListener('click', function() {
         modal.style.display = 'none';
     });
 
-    let play = document.getElementById("soundMusic")
-        function playMusic(){
+    let play = document.getElementById("soundMusic");
+    function playMusic(){
         let audio = new Audio("Out of Flux - Descending Chamber.mp3");
-        audio.play()
+        audio.play();
     }
     play.addEventListener("click", playMusic);
 });
-
 
 function plusSlides(n) {
     showSlides(slideIndex += n);
@@ -145,13 +139,11 @@ document.addEventListener('DOMContentLoaded', () => {
     showSlides(slideIndex);
 });
 
-// Function to toggle lights out effect
 function toggleLightsOut() {
     const lightsOut = document.querySelector('.lights-out');
     lightsOut.classList.toggle('active');
 }
 
-// Example: Toggling the effect with a button click
 document.getElementById('startButton').addEventListener('click', toggleLightsOut);
 let slideIndex = 0;
 
@@ -175,3 +167,5 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const audio = document.getElementById('background-music');
     audio.play();
 });
+
+export { nama };

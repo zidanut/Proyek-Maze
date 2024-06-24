@@ -7,47 +7,43 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Firebase SDK -->
     <script type="module">
-        // Impor fungsi yang dibutuhkan dari SDK yang diperlukan
+        // Import required functions from the Firebase SDK
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-        // Konfigurasi Firebase untuk aplikasi web
+        //import nama dan skor dari file lain
+        import { playerScore1, wallsOpened, sisawaktu } from 'Game.js';
+        import { nama } from "revisi_ke2_script.js";
+        console.log(nama);
+        console.log(playerScore1);
+        console.log(wallsOpened);
+        console.log(sisawaktu);
+        // Firebase configuration for the web app
         const firebaseConfig = {
             apiKey: "AIzaSyBw8y3-rHekvNvt3tCcnW6rhRCFvupWtuc",
             authDomain: "tugas-akhir-web1-6332e.firebaseapp.com",
+            databaseURL: "https://tugas-akhir-web1-6332e-default-rtdb.firebaseio.com",
             projectId: "tugas-akhir-web1-6332e",
             storageBucket: "tugas-akhir-web1-6332e.appspot.com",
             messagingSenderId: "519826560712",
-            appId: "1:519826560712:web:e91c1b0e9dbf0e38b777fd",
-            databaseURL: "https://tugas-akhir-web1-6332e-default-rtdb.firebaseio.com/" // Tambahkan baris ini untuk Realtime Database
+            appId: "1:519826560712:web:e91c1b0e9dbf0e38b777fd"
         };
 
-        // Inisialisasi Firebase
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
 
-        // Tambahkan skor ke database
+        // Add score to the database and update leaderboard
         document.addEventListener('DOMContentLoaded', () => {
-            const scoreForm = document.getElementById('score-form');
-            const playerNameInput = document.getElementById('player-name');
-            const playerScoreInput = document.getElementById('player-score');
-            const scoreList = document.getElementById('score-list');
-
-            scoreForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const playerName = playerNameInput.value.trim();
-                const playerScore = playerScoreInput.value.trim();
-
-                if (playerName && playerScore) {
-                    push(ref(database, 'scores'), {
-                        name: playerName,
-                        score: parseInt(playerScore)
-                    });
-
-                    playerNameInput.value = '';
-                    playerScoreInput.value = '';
-                }
+            // Push player data to the database
+            push(ref(database, 'scores'), {
+                name: nama,
+                score: parseInt(playerScore1),
+                wallsOpened: wallsOpened,
+                remainingTime: sisawaktu
             });
+
+            const scoreList = document.getElementById('score-list');
 
             onValue(ref(database, 'scores'), (snapshot) => {
                 const scores = [];
@@ -56,14 +52,14 @@
                     scores.push(score);
                 });
 
-                // Urutkan skor dalam urutan menurun
+                // Sort scores in descending order
                 scores.sort((a, b) => b.score - a.score);
 
                 scoreList.innerHTML = '';
                 scores.forEach((score, index) => {
                     const li = document.createElement('li');
                     li.className = 'list-group-item';
-                    li.textContent = `${index + 1}. ${score.name}: ${score.score}`;
+                    li.textContent = `${index + 1}. ${score.name}: ${score.score}, Walls Opened: ${score.wallsOpened}, Remaining Time: ${score.remainingTime}`;
                     scoreList.appendChild(li);
                 });
             });
@@ -94,23 +90,6 @@
         }
         .card-body {
             padding: 1.5rem;
-        }
-        .form-control {
-            background: #2e2e2e;
-            border: 1px solid #444;
-            color: #fff;
-            border-radius: 5px;
-            margin-bottom: 1rem;
-        }
-        .btn-primary {
-            background: #007bff;
-            border: none;
-            border-radius: 5px;
-            padding: 0.5rem;
-            font-size: 1rem;
-        }
-        .btn-primary:hover {
-            background: #0056b3;
         }
         .btn-back {
             background: #007bff;
@@ -145,29 +124,13 @@
 </head>
 <body>
     <div class="container">
-        <div class="card mb-3">
-            <div class="card-header text-center">
-                <h1>Submit Score</h1>
-            </div>
-            <div class="card-body">
-                <form id="score-form">
-                    <div class="form-group">
-                        <input type="text" id="player-name" class="form-control" placeholder="Player Name" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="number" id="player-score" class="form-control" placeholder="Score" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-block">Submit Score</button>
-                </form>
-            </div>
-        </div>
         <div class="card">
             <div class="card-header text-center">
                 <h1>Leaderboard</h1>
             </div>
             <div class="card-body">
                 <ul id="score-list" class="list-group"></ul>
-                <button class="btn btn-primary btn-back" onclick="window.history.back()">Back</button>
+                <a href="revisi_ke2_home.html"><button class="btn btn-primary btn-back">Back</button></a>
             </div>
         </div>
     </div>
