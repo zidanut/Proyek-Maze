@@ -3,10 +3,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <title>Test</title>
+    <title>Math Maze Adventure</title>
     <style>
         body { margin: 0; overflow: hidden; }
-        canvas { display: block; }
         #loading {
             position: absolute;
             top: 0;
@@ -24,13 +23,13 @@
         #container {
             display: none;
         }
-        #hearts {
+        #hati2 {
             position: absolute;
             top: 10px;
             left: 10px;
             z-index: 20;
         }
-        .heart {
+        .hati {
             width: 30px;
             height: 30px;
             margin-right: 5px;
@@ -43,7 +42,7 @@
             font-size: 2em;
             color: white;
         }
-        #notification {
+        #notifKalah {
             position: fixed;
             top: 0;
             left: 0;
@@ -56,17 +55,17 @@
             justify-content: center;
             align-items: center;
             z-index: 20;
-            display: none; /* Initially hidden */
+            display: none;
         }
-        #notification img {
+        #notifKalah img {
             width: 400px;
             height: 200px;
         }
-        #notification p {
+        #notifKalah p {
             font-size: 2em;
             margin: 20px 0;
         }
-        #notification button {
+        #notifKalah button {
             margin-top: 20px;
             padding: 10px 20px;
             font-size: 1em;
@@ -77,10 +76,10 @@
             color: white;
             transition: background-color 0.3s ease;
         }
-        #notification button:hover {
+        #notifKalah button:hover {
             background-color: #ff0000;
         }
-        #winNotification {
+        #notifMenang {
             position: fixed;
             top: 0;
             left: 0;
@@ -93,13 +92,13 @@
             justify-content: center;
             align-items: center;
             z-index: 20;
-            display: none; /* Initially hidden */
+            display: none;
         }
-        #winNotification p {
+        #notifMenang p {
             font-size: 2em;
             margin: 20px 0;
         }
-        #winNotification button {
+        #notifMenang button {
             margin-top: 20px;
             padding: 10px 20px;
             font-size: 1em;
@@ -110,10 +109,10 @@
             color: white;
             transition: background-color 0.3s ease;
         }
-        #winNotification button:hover {
+        #notifMenang button:hover {
             background-color: #00ff00;
         }
-        #mathQuestion {
+        #soalMatematika {
             position: fixed;
             top: 50%;
             left: 50%;
@@ -125,11 +124,11 @@
             z-index: 30;
             display: none;
         }
-        #mathQuestion p {
+        #soalMatematika p {
             font-size: 1.5em;
             margin-bottom: 20px;
         }
-        #mathQuestion button {
+        #soalMatematika button {
             margin: 5px;
             padding: 10px;
             font-size: 1em;
@@ -140,25 +139,25 @@
 <body>
     <div id="loading">Wake up...</div>
     <div id="container"></div>
-    <div id="hearts"></div>
+    <div id="hati2"></div>
     <div id="timer">00:00</div>
-    <div id="notification">
+    <div id="notifKalah">
         <img src="rip.jpg" alt="You Died">
         <p>You Died!</p>
         <button id="respawnButton">Respawn</button>
         <button id="exitButton">Exit</button>
     </div>
-    <div id="winNotification">
+    <div id="notifMenang">
         <p>You Win!</p>
         <p id="scoreText"></p>
         <button id="mainMenuButton">Main Menu</button>
         <button id="leaderboardButton">Leaderboard</button>
     </div>
-    <div id="mathQuestion">
+    <div id="soalMatematika">
         <p id="questionText"></p>
-        <button id="option1"></button>
-        <button id="option2"></button>
-        <button id="option3"></button>
+        <button id="pilihan1"></button>
+        <button id="pilihan2"></button>
+        <button id="pilihan3"></button>
     </div>
 
     <script type="importmap">
@@ -177,8 +176,8 @@
         import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js';
 
         let model, animations, playerHealth = 3, playerScore = 0, wallsOpened = 0;
-        let controlsEnabled = true, gameStartTime, timerInterval;
-        let currentMathQuestion;
+        let controlsEnabled = true, timerInterval;
+        let currentsoalMatematika;
         let audioInitialized = false;
 
         const clock = new THREE.Clock();
@@ -206,20 +205,20 @@
 
         const container = document.getElementById('container');
         const loadingScreen = document.getElementById('loading');
-        const heartsContainer = document.getElementById('hearts');
+        const hati2Container = document.getElementById('hati2');
         const timerElement = document.getElementById('timer');
-        const notification = document.getElementById('notification');
+        const notifKalah = document.getElementById('notifKalah');
         const respawnButton = document.getElementById('respawnButton');
         const exitButton = document.getElementById('exitButton');
-        const winNotification = document.getElementById('winNotification');
+        const notifMenang = document.getElementById('notifMenang');
         const scoreText = document.getElementById('scoreText');
         const mainMenuButton = document.getElementById('mainMenuButton');
         const leaderboardButton = document.getElementById('leaderboardButton');
-        const mathQuestion = document.getElementById('mathQuestion');
+        const soalMatematika = document.getElementById('soalMatematika');
         const questionText = document.getElementById('questionText');
-        const option1 = document.getElementById('option1');
-        const option2 = document.getElementById('option2');
-        const option3 = document.getElementById('option3');
+        const pilihan1 = document.getElementById('pilihan1');
+        const pilihan2 = document.getElementById('pilihan2');
+        const pilihan3 = document.getElementById('pilihan3');
 
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setPixelRatio(window.devicePixelRatio);
@@ -235,7 +234,7 @@
 
         const worldOctree = new Octree();
 
-        const playerCollider = new Capsule(new THREE.Vector3(0, 0.35, 0), new THREE.Vector3(0, 1, 0), 0.35);
+        const playerCollider = new Capsule(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 1.65, 0), 0.35);
         const playerVelocity = new THREE.Vector3();
         const playerDirection = new THREE.Vector3();
 
@@ -254,6 +253,8 @@
         const bgSound = new THREE.Audio(listener);
         const flashlightSound = new THREE.Audio(listener);
         const footstepSound = new THREE.Audio(listener);
+        const sakit = new THREE.Audio(listener);
+        const mati = new THREE.Audio(listener);
 
         const audioLoader = new THREE.AudioLoader();
 
@@ -261,6 +262,16 @@
             bgSound.setBuffer(buffer);
             bgSound.setLoop(true);
             bgSound.setVolume(0.4);
+        });
+
+        audioLoader.load('Mati.mp3', (buffer) => {
+            mati.setBuffer(buffer);
+            mati.setVolume(0.6);
+        });
+
+        audioLoader.load('Sakit.mp3', (buffer) => {
+            sakit.setBuffer(buffer);
+            sakit.setVolume(0.65);
         });
 
         audioLoader.load('flashlight.mp3', (buffer) => {
@@ -301,7 +312,7 @@
         container.addEventListener('mousedown', () => {
             document.body.requestPointerLock();
             initializeAudio();
-            if (!document.getElementById('notification')) {
+            if (!document.getElementById('notifKalah')) {
                 document.body.requestPointerLock();
             }
         });
@@ -338,7 +349,7 @@
             if (!playerOnFloor) {
                 playerVelocity.y -= GRAVITY * deltaTime;
                 damping *= 0.1;
-            }
+            } 
             playerVelocity.addScaledVector(playerVelocity, damping);
             const deltaPosition = playerVelocity.clone().multiplyScalar(deltaTime);
             playerCollider.translate(deltaPosition);
@@ -349,7 +360,7 @@
             // Head bobbing effect
             if (playerOnFloor && (keyStates['KeyW'] || keyStates['KeyA'] || keyStates['KeyS'] || keyStates['KeyD'])) {
                 const bobbingSpeed = 10;
-                const bobbingAmount = 0.02;
+                const bobbingAmount = 0.04;
                 const time = clock.getElapsedTime();
                 camera.position.y += Math.sin(time * bobbingSpeed) * bobbingAmount;
 
@@ -382,7 +393,7 @@
 
         function controls(deltaTime) {
             if (!controlsEnabled) return;
-            const speedDelta = deltaTime * (playerOnFloor ? 10 : 3); // Slower player speed
+            const speedDelta = deltaTime * (playerOnFloor ? 10 : 3);
             if (keyStates['KeyW']) {
                 playerVelocity.add(getForwardVector().multiplyScalar(speedDelta));
             }
@@ -412,7 +423,7 @@
             });
             loadingScreen.style.display = 'none';
             container.style.display = 'block';
-            updateHearts();
+            updatehati2();
             addWalls();
             startTimer();
             addWinObject();
@@ -432,10 +443,38 @@
                     new THREE.Vector3(-16.728, 0, -0.325)
                 ],
                 [
-                    new THREE.Vector3(-7.043, 0, 1.947),
-                    new THREE.Vector3(-7.043, 0, 6.955)
+                    new THREE.Vector3(-11.2, 0, -3),
+                    new THREE.Vector3(-21.8, 0, -3)
+                ],
+                [
+                    new THREE.Vector3(-16, 0, 1.9),
+                    new THREE.Vector3(-22, 0, 1.9)
+                ],
+                [
+                    new THREE.Vector3(-22, 0, 9),
+                    new THREE.Vector3(-16, 0, 9)
+                ],
+                [
+                    new THREE.Vector3(-9.6, 0, 4.7),
+                    new THREE.Vector3(-9.6, 0, -0.76)
+                ],
+                [
+                    new THREE.Vector3(-5.3, 0, 11.5),
+                    new THREE.Vector3(0.28, 0, 11.5)
+                ],
+                [
+                    new THREE.Vector3(-7.5, 0, 13.7),
+                    new THREE.Vector3(0.44, 0, 13.7)
+                ],
+                [
+                    new THREE.Vector3(-2, 0, 16),
+                    new THREE.Vector3(-12.3, 0, 16)
+                ],
+                [
+                    new THREE.Vector3(-11.5, 0, 18.4),
+                    new THREE.Vector3(-10.6, 0, 18.4)
                 ]
-                // Tambahkan
+                // Tambahkan Monster
             ];
 
             monsterWaypoints.forEach(waypoints => {
@@ -480,7 +519,7 @@
                     monsterData.currentWaypoint = (monsterData.currentWaypoint + 1) % waypoints.length;
                 } else {
                     direction.normalize();
-                    monster.position.add(direction.multiplyScalar(deltaTime * 0.5)); // Slower monster speed
+                    monster.position.add(direction.multiplyScalar(deltaTime * 0.5));
                     monster.lookAt(targetPosition);
 
                     monsterData.collider.start.set(monster.position.x, monster.position.y + 0.35, monster.position.z);
@@ -497,13 +536,13 @@
             });
         }
 
-        function updateHearts() {
-            heartsContainer.innerHTML = '';
+        function updatehati2() {
+            hati2Container.innerHTML = '';
             for (let i = 0; i < playerHealth; i++) {
-                const heart = document.createElement('img');
-                heart.src = 'heart.jpg';
-                heart.className = 'heart';
-                heartsContainer.appendChild(heart);
+                const hati = document.createElement('img');
+                hati.src = 'heart.jpg';
+                hati.className = 'hati';
+                hati2Container.appendChild(hati);
             }
         }
 
@@ -512,7 +551,7 @@
                 const distance = playerCollider.end.distanceTo(monsterData.collider.start);
                 if (distance < 1) {
                     playerHealth -= 1;
-                    updateHearts();
+                    updatehati2();
                     if (playerHealth <= 0) {
                         playerDead();
                     }
@@ -525,10 +564,10 @@
             for (const wall of walls) {
                 const distance = playerCollider.end.distanceTo(wall.position);
                 if (distance < 1) {
-                    if (!currentMathQuestion) {
-                        currentMathQuestion = generateMathQuestion();
+                    if (!currentsoalMatematika) {
+                        currentsoalMatematika = generatesoalMatematika();
                     }
-                    displayMathQuestion(wall);
+                    displaysoalMatematika(wall);
                     playerVelocity.set(0, 0, 0);
                     controlsEnabled = false;
                     break;
@@ -537,13 +576,14 @@
         }
 
         function playerDead() {
-            notification.style.display = 'flex';
+            mati.play();
+            notifKalah.style.display = 'flex';
             document.exitPointerLock();
             clearInterval(timerInterval);
         }
 
         respawnButton.addEventListener('click', () => {
-            notification.style.display = 'none';
+            notifKalah.style.display = 'none';
             respawnPlayer();
             document.body.requestPointerLock();
         });
@@ -556,7 +596,7 @@
             playerHealth = 3;
             playerScore = 0;
             wallsOpened = 0;
-            updateHearts();
+            updatehati2();
             playerCollider.start.set(0, 0.35, 0);
             playerCollider.end.set(0, 1, 0);
             playerVelocity.set(0, 0, 0);
@@ -564,13 +604,32 @@
             startTimer();
         }
 
-        function generateMathQuestion() {
-            const num1 = Math.floor(Math.random() * 10) + 1;
-            const num2 = Math.floor(Math.random() * 10) + 1;
-            const correctAnswer = Math.random() > 0.5 ? num1 + num2 : num1 - num2;
-            const question = `${num1} ${correctAnswer === num1 + num2 ? '+' : '-'} ${num2}`;
-            const incorrectAnswer1 = correctAnswer + (Math.floor(Math.random() * 5) + 1);
-            const incorrectAnswer2 = correctAnswer - (Math.floor(Math.random() * 5) + 1);
+        function generatesoalMatematika() {
+            const num1 = Math.floor(Math.random() * 30) + 1;
+            const num2 = Math.floor(Math.random() * 30) + 1;
+            const operation = Math.random();
+
+            let correctAnswer;
+            let question;
+
+            if (operation < 0.25) {
+                correctAnswer = num1 + num2;
+                question = `${num1} + ${num2}`;
+            } else if (operation < 0.5) {
+                correctAnswer = num1 - num2;
+                question = `${num1} - ${num2}`;
+            } else if (operation < 0.75) {
+                correctAnswer = num1 * num2;
+                question = `${num1} * ${num2}`;
+            } else {
+                // Ensure that division yields an integer result
+                const dividend = num1 * num2;
+                correctAnswer = num1;
+                question = `${dividend} / ${num2}`;
+            }
+
+            const incorrectAnswer1 = correctAnswer + (Math.floor(Math.random() * 10) + 1);
+            const incorrectAnswer2 = correctAnswer - (Math.floor(Math.random() * 10) + 1);
             const answers = [correctAnswer, incorrectAnswer2, incorrectAnswer1].sort(() => Math.random() - 0.5);
 
             return {
@@ -580,18 +639,18 @@
             };
         }
 
-        function displayMathQuestion(wall) {
-            disablePointerLock(); // Disable pointer lock when showing the math question
-            questionText.innerText = currentMathQuestion.question;
-            option1.innerText = currentMathQuestion.answers[0];
-            option2.innerText = currentMathQuestion.answers[1];
-            option3.innerText = currentMathQuestion.answers[2];
+        function displaysoalMatematika(wall) {
+            disablePointerLock();
+            questionText.innerText = currentsoalMatematika.question;
+            pilihan1.innerText = currentsoalMatematika.answers[0];
+            pilihan2.innerText = currentsoalMatematika.answers[1];
+            pilihan3.innerText = currentsoalMatematika.answers[2];
 
-            mathQuestion.style.display = 'block';
+            soalMatematika.style.display = 'block';
 
-            option1.onclick = () => checkAnswer(currentMathQuestion.answers[0], currentMathQuestion.correctAnswer, wall);
-            option2.onclick = () => checkAnswer(currentMathQuestion.answers[1], currentMathQuestion.correctAnswer, wall);
-            option3.onclick = () => checkAnswer(currentMathQuestion.answers[2], currentMathQuestion.correctAnswer, wall);
+            pilihan1.onclick = () => cekJawaban(currentsoalMatematika.answers[0], currentsoalMatematika.correctAnswer, wall);
+            pilihan2.onclick = () => cekJawaban(currentsoalMatematika.answers[1], currentsoalMatematika.correctAnswer, wall);
+            pilihan3.onclick = () => cekJawaban(currentsoalMatematika.answers[2], currentsoalMatematika.correctAnswer, wall);
         }
 
         function disablePointerLock() {
@@ -600,34 +659,55 @@
             }
         }
 
-        function checkAnswer(selectedAnswer, correctAnswer, wall) {
+        function cekJawaban(selectedAnswer, correctAnswer, wall) {
             if (selectedAnswer === correctAnswer) {
-                mathQuestion.style.display = 'none';
+                soalMatematika.style.display = 'none';
                 scene.remove(wall);
                 controlsEnabled = true;
                 playerScore += 10;
                 wallsOpened += 1;
-                currentMathQuestion = null; // Reset the current math question
+                currentsoalMatematika = null; //gasan reset
             } else {
+                sakit.play();
                 playerHealth -= 1;
-                updateHearts();
+                updatehati2();
                 if (playerHealth <= 0) {
                     playerDead();
                 } else {
-                    currentMathQuestion = generateMathQuestion(); // Generate a new question only if the answer is wrong
-                    displayMathQuestion(wall); // Display the new question
+                    currentsoalMatematika = generatesoalMatematika(); 
+                    displaysoalMatematika(wall);
                 }
             }
         }
 
         function addWalls() {
-            const wallGeometry = new THREE.BoxGeometry(2, 7.5, 0.36);
-            const wallMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, opacity: 0.5, transparent: true });
+        const wallGeometry = new THREE.BoxGeometry(2, 7.5, 0.36);
+        const wallMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, opacity: 0.5, transparent: true });
+        
+        const wallData = [
+            { position: new THREE.Vector3(-7, 1, -1.5) },//
+            { position: new THREE.Vector3(-11.8, 1, -1.7) },//
+            { position: new THREE.Vector3(-21.3, 1, -1.6) },//
+            { position: new THREE.Vector3(-19, 1, 7.8) },//
+            { position: new THREE.Vector3(-9.5, 1, 7.8) },//
+            { position: new THREE.Vector3(-4.7, 1, 7.9) },//
+            { position: new THREE.Vector3(-2.3, 1, 15) },//
+            { position: new THREE.Vector3(-0.052, 1, 17) },//
+            { position: new THREE.Vector3(-9.5, 1, 14.9) },//
+            { position: new THREE.Vector3(-14, 1, 12.3) },//
+            { position: new THREE.Vector3(-16.6, 1, 13.8) },//
+            { position: new THREE.Vector3(-9.5, 1, 14.9) },//
+            { position: new THREE.Vector3(-0.05, 1, 5.4) }//
+            //Tambahkan lagi dindingnya
+        ];
+
+        for (const data of wallData) {
             const wall = new THREE.Mesh(wallGeometry, wallMaterial);
-            wall.position.set(-7, 1, -1.487);
+            wall.position.copy(data.position);
             wall.userData.isWall = true;
             scene.add(wall);
         }
+    }
 
         function addWinObject() {
             const sphereGeometry = new THREE.SphereGeometry(0.5, 32, 32);
@@ -637,7 +717,7 @@
             const pointLight = new THREE.PointLight(0xffff00, 1, 5);
             winSphere.add(pointLight);
 
-            winSphere.position.set(-14, 1, 4.2);
+            winSphere.position.set(-21.2, 1, 18.5);
             scene.add(winSphere);
 
             const winSphereCollider = new Capsule(
@@ -656,15 +736,15 @@
                 if (object.userData.collider) {
                     const distance = playerCollider.end.distanceTo(object.userData.collider.start);
                     if (distance < 1) {
-                        displayWinNotification();
+                        displaynotifMenang();
                         clearInterval(timerInterval);
                     }
                 }
             });
         }
 
-        function displayWinNotification() {
-            winNotification.style.display = 'flex';
+        function displaynotifMenang() {
+            notifMenang.style.display = 'flex';
             scoreText.innerText = `Score: ${playerScore}\nWalls Opened: ${wallsOpened}\nTime: ${timerElement.innerText}`;
             document.exitPointerLock();
         }
@@ -677,16 +757,38 @@
             window.location.href = '#';//ganti dengan link leaderboard
         });
 
+        const TIMER_DURATION = 300; //detik
+
         function startTimer() {
-            gameStartTime = Date.now();
-            timerInterval = setInterval(updateTimer, 1000);
+            let remainingTime = TIMER_DURATION;
+            updateTimerDisplay(remainingTime);
+            timerInterval = setInterval(() => {
+                remainingTime -= 1;
+                updateTimerDisplay(remainingTime);
+                if (remainingTime <= 0) {
+                    clearInterval(timerInterval);
+                    playerDead();
+                }
+            }, 1000);
         }
 
-        function updateTimer() {
-            const elapsedTime = Math.floor((Date.now() - gameStartTime) / 1000);
-            const minutes = Math.floor(elapsedTime / 60).toString().padStart(2, '0');
-            const seconds = (elapsedTime % 60).toString().padStart(2, '0');
+        function updateTimerDisplay(remainingTime) {
+            const minutes = Math.floor(remainingTime / 60).toString().padStart(2, '0');
+            const seconds = (remainingTime % 60).toString().padStart(2, '0');
             timerElement.innerText = `${minutes}:${seconds}`;
+        }
+
+        function teleportPlayerIfOob() {
+                if ( camera.position.y <= - 25 ) {
+
+                    playerCollider.start.set( 0, 0.35, 0 );
+                    playerCollider.end.set( 0, 1, 0 );
+                    playerCollider.radius = 0.35;
+                    camera.position.copy( playerCollider.end );
+                    camera.rotation.set( 0, 0, 0 );
+
+                }
+
         }
 
         function animate() {
